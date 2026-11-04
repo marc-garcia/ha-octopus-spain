@@ -5,10 +5,11 @@ from typing import Any
 import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.core import callback
-from homeassistant.helpers.selector import TextSelector, TextSelectorConfig, TextSelectorType
+from homeassistant.helpers.selector import TextSelector, TextSelectorConfig, TextSelectorType, NumberSelector, NumberSelectorConfig
 
 from .const import CONF_EMAIL, CONF_PASSWORD, DOMAIN
-from .credentials import CredentialError, encrypt_credentials
+from .credentials import CredentialError, encrypt_credentials, decrypt_credentials, ENCRYPTED, FORMAT
+from .cost_calculation import CONF_ENERGY_PRICE, validate_price
 from .lib.octopus_spain import OctopusSpain
 
 SCHEMA = vol.Schema(
@@ -56,13 +57,34 @@ class OptionFlowHandler(config_entries.OptionsFlow):
         errors = {}
         if user_input is not None:
             try:
-                encrypted = await validate_and_encrypt(self.hass, user_input)
+                if user_input.get(CONF_EMAIL) or user_input.get(CONF_PASSWORD):
+                    if not user_input.get(CONF_EMAIL) or not user_input.get(CONF_PASSWORD):
+                        return self.async_show_form(step_id="init", data_schema=self._schema(), errors={"base": "credentials_required"})
+                    encrypted = await validate_and_encrypt(self.hass, user_input)
+                else:
+                    current = {**self.config_entry.data, **self.config_entry.options}
+                    await self.hass.async_add_executor_job(decrypt_credentials, current)
+                    encrypted = {FORMAT: current[FORMAT], ENCRYPTED: current[ENCRYPTED]}
                 if encrypted is not None:
+                    if user_input.get(CONF_ENERGY_PRICE) is not None:
+                        encrypted[CONF_ENERGY_PRICE] = float(validate_price(user_input[CONF_ENERGY_PRICE]))
                     return self.async_create_entry(data=encrypted, title="Octopus Spain")
                 errors["base"] = "invalid_auth"
             except CredentialError:
                 errors["base"] = "secure_storage"
+            except ValueError:
+                errors["base"] = "invalid_price"
             except Exception:
                 errors["base"] = "cannot_connect"
-        # Deliberately no decrypted defaults, including for the masked password field.
-        return self.async_show_form(step_id="init", data_schema=SCHEMA, errors=errors)
+        return self.async_show_form(step_id="init", data_schema=self._schema(), errors=errors)
+
+    def _schema(self):
+        price = self.config_entry.options.get(CONF_ENERGY_PRICE)
+        price_key = vol.Optional(CONF_ENERGY_PRICE, default=price) if price is not None else vol.Optional(CONF_ENERGY_PRICE)
+        return vol.Schema(
+            {
+                vol.Optional(CONF_EMAIL): TextSelector(TextSelectorConfig(type=TextSelectorType.EMAIL)),
+                vol.Optional(CONF_PASSWORD): TextSelector(TextSelectorConfig(type=TextSelectorType.PASSWORD)),
+                price_key: NumberSelector(NumberSelectorConfig(min=0, max=1000, step="any", mode="box")),
+            }
+        )

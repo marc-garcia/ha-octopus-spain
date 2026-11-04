@@ -82,3 +82,11 @@ entities:
 ## Videotutorial
 
 [![Octopus Spain](http://img.youtube.com/vi/fJ1W_wACbfw/0.jpg)](http://www.youtube.com/watch?v=fJ1W_wACbfw)
+
+## Coste de energía a precio fijo
+
+En las opciones de la integración puedes introducir un precio fijo en EUR/kWh, sin impuestos. Correo y contraseña pueden dejarse vacíos para conservar las credenciales cifradas.
+
+Se genera la estadística externa `octopus_spain:coste_sin_impuestos_<cups>` a partir del histórico horario de consumo y se actualiza al recibir nuevas lecturas. Selecciónala como estadística de coste de la conexión de red en el panel Energía. No uses el sensor «Última Factura» como coste acumulado.
+
+El precio se aplica a **todo el histórico disponible**. Si se cambia, los costes anteriores se recalculan; no admite aún tarifas con distintas fechas de vigencia. No se incluyen impuestos, potencia, alquiler de contador ni otros conceptos. La estadística de consumo original no se modifica.

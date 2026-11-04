@@ -22,15 +22,19 @@
     "error": {
       "invalid_auth": "Email o contraseña inválidos.",
       "secure_storage": "La clave externa de cifrado falta, no es válida o no tiene permisos seguros.",
-      "cannot_connect": "No se pudo conectar con Octopus."
+      "cannot_connect": "No se pudo conectar con Octopus.",
+      "credentials_required": "Introduce correo y contraseña juntos.",
+      "invalid_price": "Precio no válido."
     },
     "step": {
       "init": {
         "title": "Octopus Energy Spain.",
         "data": {
           "email": "Email",
-          "password": "Contraseña"
-        }
+          "password": "Contraseña",
+          "energy_price_excl_tax": "Precio fijo de energía sin impuestos (€/kWh)"
+        },
+        "description": "Deja correo y contraseña vacíos para conservarlos. El precio fijo se aplica a TODO el histórico y a las nuevas lecturas; cambiarlo recalcula los costes anteriores. No incluye impuestos, potencia ni otros cargos."
       }
     }
   }
