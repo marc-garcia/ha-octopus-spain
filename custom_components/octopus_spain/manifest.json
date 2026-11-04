@@ -5,15 +5,15 @@
     "recorder"
   ],
   "codeowners": [
-    "@miguelangellv"
+    "@marc-garcia"
   ],
   "config_flow": true,
-  "documentation": "https://github.com/miguelangellv/octopus_spain",
+  "documentation": "https://github.com/marc-garcia/ha-octopus-spain/blob/secure-credentials/SECURITY-FORK.md",
   "iot_class": "local_polling",
-  "issue_tracker": "https://github.com/miguelangellv/issues",
+  "issue_tracker": "https://github.com/marc-garcia/ha-octopus-spain/issues",
   "requirements": [
     "python-graphql-client==0.4.3",
     "tariff-td==1.1"
   ],
-  "version": "1.4.0"
+  "version": "1.4.0.post1"
 }

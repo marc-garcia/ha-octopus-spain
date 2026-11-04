@@ -1,3 +1,5 @@
+> **Security fork:** credential encryption with an external key. Read [SECURITY-FORK.md](SECURITY-FORK.md) before installing.
+
 # Componente Octopus Spain para Home Assistant
 
 ## ¿Qué es Octopus Energy?
@@ -12,23 +14,13 @@ por los excedentes solares para reducir a 0€ la factura así como acumular par
 Este componente conecta con tu cuenta de _Octopus Energy_ para obtener el estado actual de tu **Solar Wallet**
 así como los datos básicos de última factura.
 
-Este componente ha sido revisado por los ingenerios de _Octopus Energy_ y ha recibido su visto bueno.
+El proyecto original indica que fue revisado por Octopus Energy. **Los cambios de cifrado de este fork no han sido revisados ni aprobados por Octopus Energy.**
 
-## Instalación
+## Instalación de este fork
 
-Puedes instalar el componente usando HACS:
+Antes de instalar, sigue [las instrucciones de clave externa y recuperación](SECURITY-FORK.md). Esta versión requiere un archivo de clave montado por separado; no funciona simplemente descargándola desde HACS. Conserva el dominio `octopus_spain` y sustituye a la integración original.
 
-### Directa usando _My Home Assistant_
-
-[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=miguelangellv&repository=ha-octopus-spain&category=integration)
-
-### Manual
-
-```
-HACS -> Integraciones -> Tres puntitos -> Repositorios Personalizados
-```
-
-Copias la URL del reposotiro ( https://github.com/MiguelAngelLV/octopus_spain ), como categoría seleccionas _Integración_ y pulsas en _Añadir_.
+Repositorio: https://github.com/marc-garcia/ha-octopus-spain — rama `secure-credentials`.
 
 ## Configuración
 

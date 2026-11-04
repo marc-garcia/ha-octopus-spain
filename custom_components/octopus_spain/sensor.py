@@ -19,8 +19,9 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import CONF_PASSWORD, CONF_EMAIL, UPDATE_INTERVAL, PERIOD_PEAK_WITH_TAXES, PERIOD_STANDARD_WITH_TAXES, PERIOD_VALLEY_WITH_TAXES
+from .const import UPDATE_INTERVAL, PERIOD_PEAK_WITH_TAXES, PERIOD_STANDARD_WITH_TAXES, PERIOD_VALLEY_WITH_TAXES
 from .coordinator import EnergyCoordinator
+from .credentials import decrypt_credentials
 from .lib.octopus_spain import OctopusSpain
 
 _LOGGER = logging.getLogger(__name__)
@@ -32,8 +33,9 @@ PERIOD_KEY = {"P1": "peak", "P2": "standard", "P3": "valley"}
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback) -> None:
     """Setup sensor platform."""
 
-    email = entry.data[CONF_EMAIL]
-    password = entry.data[CONF_PASSWORD]
+    email, password = await hass.async_add_executor_job(
+        decrypt_credentials, {**entry.data, **entry.options}
+    )
 
     sensors = []
     coordinator = OctopusCoordinator(hass, email, password)
