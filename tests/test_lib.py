@@ -109,4 +109,4 @@ async def test_readings_raises_on_api_errors(monkeypatch):
     api._token = "t"  # pylint: disable=protected-access
     with pytest.raises(OctopusApiError) as exc:
         await api.readings("A-1", _START, _END)
-    assert "node count" in str(exc.value)
+    assert str(exc.value) == "Octopus API returned no usable data"

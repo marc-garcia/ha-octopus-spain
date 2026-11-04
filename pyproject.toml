@@ -11,7 +11,6 @@ repository = "https://github.com/miguelangellv/ha-octopus-spain"
 requires-python = ">=3.13.2"
 dependencies = [
     "homeassistant>=2025.10.0",
-    "python-graphql-client==0.4.3",
     "tariff-td==1.1",
     "voluptuous>=0.15.2",
 ]

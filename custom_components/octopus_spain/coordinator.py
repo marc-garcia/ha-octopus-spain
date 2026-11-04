@@ -19,14 +19,14 @@ _LOGGER = logging.getLogger(__name__)
 class EnergyCoordinator(DataUpdateCoordinator):
     """Fetches readings and injects them as long-term statistics."""
 
-    def __init__(self, hass: HomeAssistant, email: str, password: str):
+    def __init__(self, hass: HomeAssistant, email=None, password=None, *, credentials_provider=None):
         super().__init__(
             hass=hass,
             logger=_LOGGER,
             name="Octopus Spain Energy",
             update_interval=timedelta(hours=ENERGY_UPDATE_INTERVAL),
         )
-        self._api = OctopusSpain(email, password)
+        self._api = OctopusSpain(email, password, credentials_provider=credentials_provider)
 
     async def _async_update_data(self):
         if not await self._api.login():

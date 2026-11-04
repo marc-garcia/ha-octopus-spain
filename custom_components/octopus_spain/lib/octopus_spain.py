@@ -2,9 +2,7 @@
 
 from datetime import datetime
 
-from python_graphql_client import GraphqlClient
-
-GRAPH_QL_ENDPOINT = "https://api.oees-kraken.energy/v1/graphql/"
+from .transport import GRAPH_QL_ENDPOINT, GraphqlClient
 SOLAR_WALLET_LEDGER = "SOLAR_WALLET_LEDGER"
 ELECTRICITY_LEDGER = "SPAIN_ELECTRICITY_LEDGER"
 
@@ -22,7 +20,8 @@ class OctopusApiError(Exception):
 class OctopusSpain:
     """Octopus Spain API."""
 
-    def __init__(self, email, password):
+    def __init__(self, email=None, password=None, *, credentials_provider=None):
+        self._credentials_provider = credentials_provider
         self._email = email
         self._password = password
         self._token = None
@@ -36,7 +35,11 @@ class OctopusSpain:
               }
             }
         """
-        variables = {"input": {"email": self._email, "password": self._password}}
+        if self._credentials_provider is not None:
+            email, password = await self._credentials_provider()
+        else:
+            email, password = self._email, self._password
+        variables = {"input": {"email": email, "password": password}}
 
         client = GraphqlClient(endpoint=GRAPH_QL_ENDPOINT)
         response = await client.execute_async(mutation, variables)
@@ -148,10 +151,8 @@ class OctopusSpain:
 
     @staticmethod
     def _error_message(response: dict) -> str:
-        errors = response.get("errors") or []
-        if errors:
-            return "; ".join(e.get("message", "") for e in errors)
-        return "Octopus API returned no data"
+        # Remote messages may echo account data; do not put them in HA logs.
+        return "Octopus API returned no usable data"
 
     @staticmethod
     def _parse_readings(edges):

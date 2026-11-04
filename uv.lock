@@ -1666,7 +1666,6 @@ source = { editable = "." }
 dependencies = [
     { name = "homeassistant", version = "2026.2.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.14.2'" },
     { name = "homeassistant", version = "2026.6.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.14.2'" },
-    { name = "python-graphql-client" },
     { name = "tariff-td" },
     { name = "voluptuous" },
 ]
@@ -1689,7 +1688,6 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "homeassistant", specifier = ">=2025.10.0" },
-    { name = "python-graphql-client", specifier = "==0.4.3" },
     { name = "tariff-td", specifier = "==1.1" },
     { name = "voluptuous", specifier = ">=0.15.2" },
 ]
@@ -3714,22 +3712,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/0b/1a/cbbaf13b730abb0a16b964d984e19f2fe520c21a4dc664051359a3f5a9e7/python_discovery-1.4.2.tar.gz", hash = "sha256:8f3746c4b4968d22afbb97d36e1a0e5b66e6c0f297290f2e95f05b9b8bf18690", size = 70277, upload-time = "2026-06-11T16:10:42.383Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/1a/82/a70006589557f267f15bd384c0642ad49f0d97b690c3a05b166b9dcbad3b/python_discovery-1.4.2-py3-none-any.whl", hash = "sha256:475803f53b7b2ed6e490e27373f9d8340f7d2eebf9acdaf645d7d714c97bb500", size = 33886, upload-time = "2026-06-11T16:10:41.192Z" },
-]
-
-[[package]]
-name = "python-graphql-client"
-version = "0.4.3"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "aiohttp", version = "3.13.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.14.2'" },
-    { name = "aiohttp", version = "3.13.5", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.14.2'" },
-    { name = "requests", version = "2.32.5", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.14.2'" },
-    { name = "requests", version = "2.34.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.14.2'" },
-    { name = "websockets" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/04/bf/6ebd129e957c3fd8ea1c36ae03cbd68e2342ec2bea7010d5379bd363da06/python_graphql_client-0.4.3.tar.gz", hash = "sha256:fdbd03115dde8776db02e60414b83b018d7d95e5752d6d5fabf21c99265f5b9d", size = 4140, upload-time = "2021-03-04T21:32:04.25Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/94/23/20e60e8ce635aaef99962e3d1d0f0b3e0e9632e1bd0aeb6b6cb8436a1fa3/python_graphql_client-0.4.3-py3-none-any.whl", hash = "sha256:c5eb996702acf46110b352f61819c46065ea4f4f106158535cd471e66490b25e", size = 4945, upload-time = "2021-03-04T21:32:03.077Z" },
 ]
 
 [[package]]

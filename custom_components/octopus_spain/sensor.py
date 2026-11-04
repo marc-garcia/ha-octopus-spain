@@ -33,12 +33,12 @@ PERIOD_KEY = {"P1": "peak", "P2": "standard", "P3": "valley"}
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback) -> None:
     """Setup sensor platform."""
 
-    email, password = await hass.async_add_executor_job(
-        decrypt_credentials, {**entry.data, **entry.options}
-    )
+    async def credentials_provider():
+        # Keep ciphertext in the long-lived coordinator, decrypt only for login.
+        return await hass.async_add_executor_job(decrypt_credentials, {**entry.data, **entry.options})
 
     sensors = []
-    coordinator = OctopusCoordinator(hass, email, password)
+    coordinator = OctopusCoordinator(hass, credentials_provider=credentials_provider)
     await coordinator.async_config_entry_first_refresh()
 
     accounts = coordinator.data.keys()
@@ -56,7 +56,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
 
     # Non-blocking refresh: if energy fails, the balance sensors still load and
     # the coordinator retries on its interval (it does not break the integration).
-    energy = EnergyCoordinator(hass, email, password)
+    energy = EnergyCoordinator(hass, credentials_provider=credentials_provider)
     await energy.async_refresh()
     for cups in energy.data or {}:
         sensors.append(OctopusLastDayConsumption(cups, energy))
@@ -67,9 +67,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
 class OctopusCoordinator(DataUpdateCoordinator):
     """Coordinator for Octopus Spain data."""
 
-    def __init__(self, hass: HomeAssistant, email: str, password: str):
+    def __init__(self, hass: HomeAssistant, email=None, password=None, *, credentials_provider=None):
         super().__init__(hass=hass, logger=_LOGGER, name="Octopus Spain", update_interval=timedelta(hours=UPDATE_INTERVAL))
-        self._api = OctopusSpain(email, password)
+        self._api = OctopusSpain(email, password, credentials_provider=credentials_provider)
         self._data = {}
 
     async def _async_update_data(self):

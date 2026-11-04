@@ -112,3 +112,25 @@ def test_fifo(tmp_path):
     c.os.mkfifo(p, 0o600)
     with pytest.raises(c.CredentialError):
         c.encrypt_credentials("a", "b", p)
+
+
+def test_encrypted_options_override_stale_plaintext(key):
+    legacy = {"email": "old", "password": "old-secret"}
+    options = c.encrypt_credentials("new", "new-secret", key)
+    data, clean_options = c.migrate_credentials(legacy, options, key)
+    assert c.decrypt_credentials(data, key) == ("new", "new-secret")
+    assert "password" not in data and clean_options == {}
+
+
+def test_bad_encrypted_options_never_fall_back_to_plaintext(key):
+    legacy = {"email": "old", "password": "old-secret"}
+    options = {c.FORMAT: 1, c.ENCRYPTED: "broken"}
+    with pytest.raises(c.CredentialError):
+        c.migrate_credentials(legacy, options, key)
+
+
+@pytest.mark.parametrize("mode", [0o100, 0o700, 0o1600])
+def test_executable_or_special_key_modes_rejected(key, mode):
+    key.chmod(mode)
+    with pytest.raises(c.CredentialError):
+        c.encrypt_credentials("a", "b", key)

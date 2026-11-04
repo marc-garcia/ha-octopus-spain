@@ -12,8 +12,7 @@
   "iot_class": "local_polling",
   "issue_tracker": "https://github.com/marc-garcia/ha-octopus-spain/issues",
   "requirements": [
-    "python-graphql-client==0.4.3",
     "tariff-td==1.1"
   ],
-  "version": "1.4.0.post1"
+  "version": "1.4.0.post2"
 }
