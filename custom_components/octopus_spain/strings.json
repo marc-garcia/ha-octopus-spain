@@ -24,14 +24,16 @@
       "secure_storage": "The external encryption key is missing, invalid or has unsafe permissions.",
       "cannot_connect": "Could not connect to Octopus.",
       "credentials_required": "Provide both email and password.",
-      "invalid_price": "Invalid energy price."
+      "invalid_price": "Invalid energy price.",
+      "invalid_cost_periods": "Invalid cost periods: check dates, order and amounts."
     },
     "step": {
       "init": {
         "data": {
-          "energy_price_excl_tax": "Fixed energy price excluding taxes (EUR/kWh)"
+          "energy_price_excl_tax": "Fixed energy price excluding taxes (EUR/kWh)",
+          "estimated_cost_periods": "Estimated total cost periods"
         },
-        "description": "Leave email and password blank to keep them. The fixed price applies to ALL history and future readings; changing it recalculates past costs. Taxes, standing charges and other fees are excluded."
+        "description": "Leave email and password blank to keep them. The fixed price calculates energy excluding tax over the entire history. Optional dated periods estimate total supply costs including power, rental and taxes, from each date until the next. The last period remains in effect until updated. Credits are not deducted. Clearing periods stops updates but retains previously generated statistics."
       }
     }
   }

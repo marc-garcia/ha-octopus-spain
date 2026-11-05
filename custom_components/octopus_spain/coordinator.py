@@ -19,7 +19,7 @@ _LOGGER = logging.getLogger(__name__)
 class EnergyCoordinator(DataUpdateCoordinator):
     """Fetches readings and injects them as long-term statistics."""
 
-    def __init__(self, hass: HomeAssistant, email=None, password=None, *, credentials_provider=None, energy_price=None):
+    def __init__(self, hass: HomeAssistant, email=None, password=None, *, credentials_provider=None, energy_price=None, cost_periods=None):
         super().__init__(
             hass=hass,
             logger=_LOGGER,
@@ -28,6 +28,7 @@ class EnergyCoordinator(DataUpdateCoordinator):
         )
         self._api = OctopusSpain(email, password, credentials_provider=credentials_provider)
         self._energy_price = energy_price
+        self._cost_periods = cost_periods
 
     async def _async_update_data(self):
         if not await self._api.login():
@@ -41,7 +42,7 @@ class EnergyCoordinator(DataUpdateCoordinator):
                 for cups in await self._api.cups(account):
                     start = await self._compute_start(cups, end)
                     readings = await self._api.readings(account, start, end, READING_GRANULARITY)
-                    await async_import_statistics(self.hass, cups, "consumo", readings["import"], self._energy_price)
+                    await async_import_statistics(self.hass, cups, "consumo", readings["import"], self._energy_price, self._cost_periods)
                     if readings["export"]:
                         await async_import_statistics(self.hass, cups, "vertido", readings["export"])
                     result[cups] = self._last_day(readings["import"])

@@ -5,11 +5,11 @@ from typing import Any
 import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.core import callback
-from homeassistant.helpers.selector import TextSelector, TextSelectorConfig, TextSelectorType, NumberSelector, NumberSelectorConfig
+from homeassistant.helpers.selector import TextSelector, TextSelectorConfig, TextSelectorType, NumberSelector, NumberSelectorConfig, ObjectSelector, DateSelector
 
 from .const import CONF_EMAIL, CONF_PASSWORD, DOMAIN
 from .credentials import CredentialError, encrypt_credentials, decrypt_credentials, ENCRYPTED, FORMAT
-from .cost_calculation import CONF_ENERGY_PRICE, validate_price
+from .cost_calculation import CONF_ENERGY_PRICE, validate_price, CONF_COST_PERIODS, validate_cost_periods, CostPeriodError
 from .lib.octopus_spain import OctopusSpain
 
 SCHEMA = vol.Schema(
@@ -68,10 +68,17 @@ class OptionFlowHandler(config_entries.OptionsFlow):
                 if encrypted is not None:
                     if user_input.get(CONF_ENERGY_PRICE) is not None:
                         encrypted[CONF_ENERGY_PRICE] = float(validate_price(user_input[CONF_ENERGY_PRICE]))
+                    existing = self.config_entry.options
+                    if CONF_ENERGY_PRICE not in user_input and CONF_ENERGY_PRICE in existing:
+                        encrypted[CONF_ENERGY_PRICE] = existing[CONF_ENERGY_PRICE]
+                    periods = user_input.get(CONF_COST_PERIODS, existing.get(CONF_COST_PERIODS, []))
+                    encrypted[CONF_COST_PERIODS] = validate_cost_periods(periods)
                     return self.async_create_entry(data=encrypted, title="Octopus Spain")
                 errors["base"] = "invalid_auth"
             except CredentialError:
                 errors["base"] = "secure_storage"
+            except CostPeriodError:
+                errors["base"] = "invalid_cost_periods"
             except ValueError:
                 errors["base"] = "invalid_price"
             except Exception:
@@ -86,5 +93,20 @@ class OptionFlowHandler(config_entries.OptionsFlow):
                 vol.Optional(CONF_EMAIL): TextSelector(TextSelectorConfig(type=TextSelectorType.EMAIL)),
                 vol.Optional(CONF_PASSWORD): TextSelector(TextSelectorConfig(type=TextSelectorType.PASSWORD)),
                 price_key: NumberSelector(NumberSelectorConfig(min=0, max=1000, step="any", mode="box")),
+                vol.Optional(CONF_COST_PERIODS, default=self.config_entry.options.get(CONF_COST_PERIODS, [])): ObjectSelector({
+                    "multiple": True,
+                    "label_field": "start",
+                    "fields": {
+                        "start": {"label": "Desde / From", "required": True, "selector": DateSelector()},
+                        **{key: {"label": label, "required": True, "selector": NumberSelector(NumberSelectorConfig(min=0, max=maximum, step="any", mode="box"))}
+                           for key, label, maximum in [
+                               ("energy_price", "Energía sin impuestos / Energy excl. tax (€/kWh)", 1000),
+                               ("power_per_day", "Potencia sin impuestos / Power excl. tax (€/día)", 1000),
+                               ("rental_per_day", "Alquiler sin impuestos / Rental excl. tax (€/día)", 1000),
+                               ("electricity_tax_percent", "Impuesto eléctrico / Electricity tax (%)", 100),
+                               ("vat_percent", "IVA / VAT (%)", 100),
+                           ]},
+                    },
+                }),
             }
         )

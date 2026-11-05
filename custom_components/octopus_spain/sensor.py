@@ -22,7 +22,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from .const import UPDATE_INTERVAL, PERIOD_PEAK_WITH_TAXES, PERIOD_STANDARD_WITH_TAXES, PERIOD_VALLEY_WITH_TAXES
 from .coordinator import EnergyCoordinator
 from .credentials import decrypt_credentials
-from .cost_calculation import CONF_ENERGY_PRICE
+from .cost_calculation import CONF_ENERGY_PRICE, CONF_COST_PERIODS
 from .lib.octopus_spain import OctopusSpain
 
 _LOGGER = logging.getLogger(__name__)
@@ -57,7 +57,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
 
     # Non-blocking refresh: if energy fails, the balance sensors still load and
     # the coordinator retries on its interval (it does not break the integration).
-    energy = EnergyCoordinator(hass, credentials_provider=credentials_provider, energy_price=entry.options.get(CONF_ENERGY_PRICE))
+    energy = EnergyCoordinator(hass, credentials_provider=credentials_provider, energy_price=entry.options.get(CONF_ENERGY_PRICE), cost_periods=entry.options.get(CONF_COST_PERIODS))
     await energy.async_refresh()
     for cups in energy.data or {}:
         sensors.append(OctopusLastDayConsumption(cups, energy))

@@ -24,7 +24,8 @@
       "secure_storage": "La clave externa de cifrado falta, no es válida o no tiene permisos seguros.",
       "cannot_connect": "No se pudo conectar con Octopus.",
       "credentials_required": "Introduce correo y contraseña juntos.",
-      "invalid_price": "Precio no válido."
+      "invalid_price": "Precio no válido.",
+      "invalid_cost_periods": "Periodos no válidos: revisa fechas, orden y cantidades."
     },
     "step": {
       "init": {
@@ -32,9 +33,10 @@
         "data": {
           "email": "Email",
           "password": "Contraseña",
-          "energy_price_excl_tax": "Precio fijo de energía sin impuestos (€/kWh)"
+          "energy_price_excl_tax": "Precio fijo de energía sin impuestos (€/kWh)",
+          "estimated_cost_periods": "Periodos del coste total estimado"
         },
-        "description": "Deja correo y contraseña vacíos para conservarlos. El precio fijo se aplica a TODO el histórico y a las nuevas lecturas; cambiarlo recalcula los costes anteriores. No incluye impuestos, potencia ni otros cargos."
+        "description": "Deja correo y contraseña vacíos para conservarlos. El precio fijo calcula solo energía sin impuestos y se aplica a todo el histórico. Los periodos opcionales calculan el coste total estimado con potencia, alquiler e impuestos, desde cada fecha hasta la siguiente. El último periodo sigue vigente hasta que lo actualices. No se descuentan créditos. Vaciar los periodos detiene su actualización, pero conserva el histórico ya generado."
       }
     }
   }
